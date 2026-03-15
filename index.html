@@ -20,10 +20,9 @@
             justify-content: center; 
             align-items: center;
             min-height: 100vh; 
-            /* Perbaikan: Mengizinkan scroll agar tidak terpotong di HP */
             overflow-y: auto; 
             position: relative;
-            padding: 40px 0; /* Memberi ruang atas bawah */
+            padding: 40px 0;
         }
 
         /* --- INTRO PAGE --- */
@@ -61,7 +60,7 @@
         #main-content {
             display: none; opacity: 0; width: 90%; max-width: 400px;
             transition: opacity 1s ease; z-index: 10;
-            margin-bottom: 40px; /* Ruang tambahan di bawah kartu */
+            margin-bottom: 40px;
         }
 
         .card {
@@ -70,6 +69,44 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             position: relative; border: 2px solid var(--purple-soft);
             margin-top: 20px;
+        }
+
+        /* --- HEADER LAYOUT --- */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Sejajar secara vertikal */
+            margin-bottom: 15px;
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        /* --- MUSIC BUTTON (Bulat Putih) --- */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .music-control {
+            background-color: white; 
+            width: 45px; height: 45px; 
+            border-radius: 50%; /* Membuat tombol bulat sempurna */
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+            font-size: 20px;
+            animation: spin 4s linear infinite;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .music-paused {
+            animation-play-state: paused;
+            background-color: #fcfcfc;
+            opacity: 0.8;
         }
 
         .marquee-container {
@@ -84,18 +121,9 @@
 
         @keyframes scrollText { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        .music-btn {
-            background-color: var(--purple-soft);
-            width: 50px; height: 50px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; position: absolute; top: -20px; right: -20px;
-            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.2);
-            z-index: 15; border: 2px solid white;
-        }
-
-        .main-title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 28px; color: #8e7cc3; margin: 0; }
-        .sub-date { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--text-gray); margin: 3px 0 15px 0; }
-        .hbd-text { font-family: 'Pacifico', cursive; font-size: 24px; text-align: center; color: var(--primary); margin: 5px 0; }
+        .main-title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 26px; color: #8e7cc3; margin: 0; }
+        .sub-date { font-family: 'Playfair Display', serif; font-size: 13px; color: var(--text-gray); margin: 3px 0 0 0; }
+        .hbd-text { font-family: 'Pacifico', cursive; font-size: 24px; text-align: center; color: var(--primary); margin: 15px 0 5px 0; }
 
         #typing-text { line-height: 1.8; color: #444; font-size: 14px; min-height: 140px; text-align: left; }
         .cursor { display: inline-block; width: 2px; height: 1.2em; background: var(--primary); animation: blink 0.7s infinite; vertical-align: middle; }
@@ -140,8 +168,11 @@
             </div>
             
             <div class="card-header">
-                <h1 class="main-title">This is For U.</h1>
-                <p class="sub-date">Senin, 16 Maret 2026</p>
+                <div class="header-text">
+                    <h1 class="main-title">This is For U.</h1>
+                    <p class="sub-date">Senin, 16 Maret 2026</p>
+                </div>
+                <div class="music-control" id="musicBtn" onclick="toggleMusic()">🎵</div>
             </div>
             
             <div style="text-align:center;"><p style="font-size:50px; margin:0;">🎂</p></div>
@@ -164,6 +195,7 @@
     <script>
         const message = "Happy Birthday Aurahma Andryastiwi, Semoga panjang umur sehat selalu apa yang kamu cita-citakan bisa tercapai selalu dimudahkan segala urusannya. Semoga selalu dikelilingi oleh orang baik dan pada tahun ini kamu bisa mendapatkan lebih banyak kebahagiaan, pengalaman baru yang menyenangkan, dan cerita-cerita indah yang nantinya bisa kamu kenang. Pokoknya semoga semua hal baik selalu datang menghampiri kamu. Selamat ulang tahun sekali lagii !!";
         const audio = document.getElementById("myAudio");
+        const musicBtn = document.getElementById("musicBtn");
 
         function bukaSurat() {
             document.getElementById('intro-page').style.opacity = '0';
@@ -171,7 +203,10 @@
                 document.getElementById('intro-page').style.display = 'none';
                 document.getElementById('main-content').style.display = 'block';
                 
-                audio.play().catch(e => console.log("Autoplay dicegah."));
+                audio.play().catch(e => {
+                    console.log("Autoplay dicegah.");
+                    musicBtn.classList.add("music-paused");
+                });
                 
                 setTimeout(() => {
                     document.getElementById('main-content').style.opacity = '1';
@@ -207,7 +242,13 @@
         }
 
         function toggleMusic() {
-            if (audio.paused) { audio.play(); } else { audio.pause(); }
+            if (audio.paused) {
+                audio.play();
+                musicBtn.classList.remove("music-paused");
+            } else {
+                audio.pause();
+                musicBtn.classList.add("music-paused");
+            }
         }
 
         function sendToWA() {
